@@ -3,33 +3,24 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-contract Mermaid is ERC721URIStorage{
-    error  UriNotMapped();
-    error NotOwner();
+
+contract Mermaid is ERC721URIStorage,Ownable{
+    error UriNotMapped();
     error InsufficientMintFee();
     event nftMinted(address owner, uint tokenId);
 
-
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
-    address owner;
     uint256 public mintFee = 0;
     mapping(uint=>string) tokenURIs;
 
     constructor() ERC721("Mermaid","MRD"){
-        owner = msg.sender;
-    }
-
-    modifier onlyOwner(){
-        if(msg.sender != owner){
-            revert NotOwner();
-            _;
-        }
     }
   
-    function safeMint() external payable returns(uint tokenID) {
+    function safeMint() external payable  returns(uint tokenID) {
         if(msg.value < mintFee){
             revert InsufficientMintFee();
         }
@@ -67,9 +58,9 @@ contract Mermaid is ERC721URIStorage{
 
     function getArray() internal pure returns(uint8[3] memory){
         return [10, 40, 100];
-    }
-
-      function setMintfee(uint newMintFee) public onlyOwner{
+    }    
+      
+    function setMintfee(uint newMintFee) public onlyOwner{
         mintFee = newMintFee;
     }   
 }
